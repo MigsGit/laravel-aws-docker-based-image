@@ -1,0 +1,57 @@
+version: 0.2
+
+run-as: Linux-user-name
+
+env:
+  shell: shell-tag
+  variables:
+    key: "value"
+    key: "value"
+  parameter-store:
+    key: "value"
+    key: "value"
+  exported-variables:
+    - variable
+    - variable
+  secrets-manager:
+    key: secret-id:json-key:version-stage:version-id
+  git-credential-helper: no | yes
+
+proxy:
+  upload-artifacts: no | yes
+  logs: no | yes
+
+batch:
+  fast-fail: false | true
+  # build-list:
+  # build-matrix:
+  # build-graph:
+  # build-fanout:
+        
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      php: 8.2
+    commands:
+      - echo 'Install Success'
+    
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 539247472620.dkr.ecr.us-east-1.amazonaws.com
+      - echo 'Pre-build success'
+  build:
+    on-failure: ABORT
+    commands:
+      - docker build -t lad-prod-based-image .
+      - docker tag lad-prod-based-image:latest 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image:latest
+      - echo 'Build success'
+  post_build:
+    on-failure: ABORT
+    commands:
+      - docker push 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image:latest
+      - echo 'Post Build success'
+      - command
+      - command
+    
