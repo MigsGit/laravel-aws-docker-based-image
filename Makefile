@@ -17,3 +17,5 @@ build: ## Build the Docker images with AWS
 push:
 	docker tag lad-prod-based-image:latest 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image:latest
 	docker push 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image:latest
+build:
+	- docker build -t docker-based-image .

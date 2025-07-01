@@ -15,3 +15,7 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql bcmath curl opcache mbstring
 
 # Copy composer executable.
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
+
+# Install Node.js (LTS) & npm
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs
