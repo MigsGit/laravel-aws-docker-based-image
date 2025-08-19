@@ -1,19 +1,26 @@
-.PHONY: help ps build build-prod start fresh fresh-prod stop restart destroy \
-	cache cache-clear migrate migrate migrate-fresh tests tests-html
+setup: #Run Setup from the sratch #@make composer-update
+	@make build
+	@make up
+ps:  #Check docker containers
+	docker-compose ps
+build: #Run build force and no cache
+	docker-compose build --no-cache --force-rm
+fresh: #Refresh containers
+	@make stop
+	@make up
+stop: #Stop containers
+	docker-compose stop
+up: #Run all containers
+	docker-compose up -d
+    #docker-compose -f docker-compose.yml build --no-cache --force-rm
+# In laravel, the edit the container_name to run the script below.
+cache: #Laravel Clear Cache
+    docker exec container_name bash -c "php artisan config:cache"
+    docker exec container_name bash -c "php artisan config:clear"
+    docker exec container_name bash -c "php artisan cache:clear"
 
-CONTAINER_PHP=api
-CONTAINER_REDIS=redis
-CONTAINER_DATABASE=database
-
-help: ## Print help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
-auth: ## Authenticate Docker Image with AWS
-	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 539247472620.dkr.ecr.us-east-1.amazonaws.com
-build-push:
-	make build
-	make push
-build: ## Build the Docker images with AWS
-	docker build -t lad-prod-based-image-rev1 .
-push:
-	docker tag lad-prod-based-image-rev1:latest 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image-rev1:latest
-	docker push 539247472620.dkr.ecr.us-east-1.amazonaws.com/lad-prod-based-image-rev1:latest
+composer-update: #Laravel Composer update
+	docker exec laravel-app bash -c "composer update"
+data: #Laravel Migration
+	docker exec container_name bash -c "php artisan migrate"
+	docker exec container_name bash -c "php artisan db:seed"
