@@ -1,0 +1,19 @@
+
+IMAGE_ID = 1234
+CONTAINER_PHP=db-image-8-3-4
+
+build: ## Build the Docker images with AWS
+	docker build -t ${CONTAINER_PHP} .
+
+#Check the php version on specific image
+check-php-v:
+	docker run --rm ${CONTAINER_PHP} php -v 
+#run exec bash
+exec:
+	docker exec -it ${CONTAINER_PHP} sh 
+#remove the images
+rm-image:
+	docker rmi <IMAGE_ID> 
+#FORCE remove the images, be careful to this command
+rm-image-force:
+	docker rmi -f <IMAGE_ID> 
