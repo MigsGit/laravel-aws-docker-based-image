@@ -1,0 +1,27 @@
+version: 0.2
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      php: 8.3
+    commands:
+      - echo 'Install Success'
+
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY
+      - echo 'Pre-build success'
+  build:
+    on-failure: ABORT
+    commands:
+      - cp .env.prod .env
+      - docker build -t $IMAGE .
+      - docker tag $IMAGE:$IMAGE_TAG $REPOSITORY/$IMAGE:$IMAGE_TAG
+      - echo 'Build success'
+  post_build:
+    on-failure: ABORT
+    commands:
+      - docker images ls -a
+      - docker push $REPOSITORY/$IMAGE:$IMAGE_TAG
+      - echo 'Post Build success'
