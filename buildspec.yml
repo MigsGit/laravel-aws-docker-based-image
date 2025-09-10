@@ -15,7 +15,7 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      - docker build -t $IMAGE .
+      - docker build  --cache-from $REPOSITORY/$IMAGE:$IMAGE_TAG -t $IMAGE .
       - docker tag $IMAGE:$IMAGE_TAG $REPOSITORY/$IMAGE:$IMAGE_TAG
       - echo 'Build success'
   post_build:
